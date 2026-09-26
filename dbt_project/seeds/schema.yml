@@ -1,0 +1,26 @@
+version: 2
+
+seeds:
+  - name: raw_instruments
+    description: Instrument reference data — 15 instruments across 4 asset classes
+    config:
+      column_types:
+        is_active: boolean
+
+  - name: raw_prices
+    description: Daily prices from Bloomberg and Reuters — 31 price records across 3 business dates
+    config:
+      column_types:
+        price_id: integer
+        close_price: double
+        open_price: double
+        high_price: double
+        low_price: double
+        volume: bigint
+
+  - name: raw_fx_rates
+    description: FX rates (Bloomberg + Reuters) for GBP, EUR, JPY → USD
+    config:
+      column_types:
+        rate_id: integer
+        rate: double

@@ -1,0 +1,29 @@
+# Copy to ~/.dbt/profiles.yml   OR   set DBT_PROFILES_DIR to point at this project directory.
+# Never commit the real profiles.yml — it may contain credentials.
+
+market_data_lakehouse:
+  target: dev
+  outputs:
+
+    # ── Local development — DuckDB (zero cost, zero infra) ────────────────────
+    dev:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', 'dev.duckdb') }}"
+      threads: 4
+
+    # ── CI — DuckDB in-memory (used in GitHub Actions) ────────────────────────
+    ci:
+      type: duckdb
+      path: "{{ env_var('DBT_DUCKDB_PATH', ':memory:') }}"
+      threads: 2
+
+    # ── Production — Databricks on Azure ─────────────────────────────────────
+    # pip install dbt-databricks
+    prod:
+      type: databricks
+      host: "{{ env_var('DATABRICKS_HOST') }}"
+      http_path: "{{ env_var('DATABRICKS_HTTP_PATH') }}"
+      token: "{{ env_var('DATABRICKS_TOKEN') }}"
+      catalog: market_data
+      schema: gold
+      threads: 8

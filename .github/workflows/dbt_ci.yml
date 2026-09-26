@@ -1,0 +1,77 @@
+name: dbt CI
+
+on:
+  push:
+    branches: [main, develop]
+    paths:
+      - 'dbt_project/**'
+      - '.github/workflows/dbt_ci.yml'
+  pull_request:
+    branches: [main]
+    paths:
+      - 'dbt_project/**'
+
+jobs:
+  dbt-test:
+    name: dbt seed + run + test
+    runs-on: ubuntu-latest
+
+    defaults:
+      run:
+        working-directory: dbt_project
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Python 3.11
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+          cache: pip
+
+      - name: Install dbt-duckdb
+        run: pip install dbt-duckdb dbt-utils
+
+      - name: Install dbt packages
+        run: dbt deps
+
+      - name: dbt debug (validate profiles + connection)
+        env:
+          DBT_PROFILES_DIR: .
+          DBT_DUCKDB_PATH: ":memory:"
+        run: dbt debug --profiles-dir .
+
+      - name: dbt seed
+        env:
+          DBT_PROFILES_DIR: .
+          DBT_DUCKDB_PATH: ":memory:"
+        run: dbt seed --profiles-dir . --target ci
+
+      - name: dbt run
+        env:
+          DBT_PROFILES_DIR: .
+          DBT_DUCKDB_PATH: ":memory:"
+        run: dbt run --profiles-dir . --target ci
+
+      - name: dbt test
+        env:
+          DBT_PROFILES_DIR: .
+          DBT_DUCKDB_PATH: ":memory:"
+        run: dbt test --profiles-dir . --target ci
+
+      - name: dbt docs generate
+        env:
+          DBT_PROFILES_DIR: .
+          DBT_DUCKDB_PATH: ":memory:"
+        run: dbt docs generate --profiles-dir . --target ci
+
+      - name: Upload dbt artifacts
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: dbt-artifacts
+          path: |
+            dbt_project/target/manifest.json
+            dbt_project/target/run_results.json
+            dbt_project/target/catalog.json

@@ -1,0 +1,83 @@
+version: 2
+
+models:
+  - name: int_instruments_enriched
+    description: >
+      Active instruments only. Adds asset_class_code, display_name, and
+      requires_fx_conversion flag. Filters out delisted instruments.
+    columns:
+      - name: instrument_sk
+        tests:
+          - not_null
+          - unique
+
+      - name: isin
+        tests:
+          - not_null
+          - unique
+
+      - name: is_active
+        description: All rows in this model are active (is_active = true)
+        tests:
+          - not_null
+
+      - name: asset_class_code
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['EQ', 'FI', 'CM', 'FX', 'OT']
+
+  - name: int_fx_rates_canonical
+    description: >
+      Canonical (source-averaged) FX rates. One row per (business_date, from_currency,
+      to_currency). Includes spread quality flag for Bloomberg/Reuters divergence.
+    columns:
+      - name: business_date
+        tests:
+          - not_null
+
+      - name: from_currency
+        tests:
+          - not_null
+
+      - name: to_currency
+        tests:
+          - not_null
+
+      - name: mid_rate
+        tests:
+          - not_null
+
+      - name: quality_flag
+        tests:
+          - accepted_values:
+              values: ['OK', 'SINGLE_SOURCE', 'ZERO_RATE', 'SPREAD_BREACH']
+
+  - name: int_prices_reconciled
+    description: >
+      Reconciled prices — one row per (isin, business_date). Bloomberg and Reuters
+      prices compared; accepted_price = average when within tolerance.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - isin
+            - business_date
+    columns:
+      - name: reconciled_price_sk
+        tests:
+          - not_null
+          - unique
+
+      - name: isin
+        tests:
+          - not_null
+
+      - name: business_date
+        tests:
+          - not_null
+
+      - name: recon_status
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['MATCH', 'WITHIN_TOLERANCE', 'WARNING', 'BREACH', 'SINGLE_SOURCE']

@@ -1,0 +1,59 @@
+version: 2
+
+models:
+  - name: mart_market_snapshot
+    description: >
+      Daily market snapshot. One row per (isin, business_date) for all active
+      instruments with a non-BREACH reconciled price. Prices normalised to USD
+      via canonical FX rates. Primary downstream table for reporting.
+    tests:
+      - dbt_utils.unique_combination_of_columns:
+          combination_of_columns:
+            - isin
+            - business_date
+    columns:
+      - name: reconciled_price_sk
+        tests:
+          - not_null
+          - unique
+
+      - name: isin
+        tests:
+          - not_null
+
+      - name: business_date
+        tests:
+          - not_null
+
+      - name: accepted_price
+        description: Source-reconciled accepted close price in native currency
+        tests:
+          - not_null
+
+      - name: accepted_price_usd
+        description: Accepted price converted to USD via canonical FX rate
+        tests:
+          - not_null
+
+      - name: row_quality_rag
+        description: "Traffic-light quality indicator: GREEN / YELLOW / AMBER"
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['GREEN', 'YELLOW', 'AMBER']
+
+  - name: mart_recon_exceptions
+    description: >
+      Reconciliation exceptions: BREACH-status price pairs and active instruments
+      with no price for the latest business date. Fed to alerting / manual review.
+    columns:
+      - name: exception_sk
+        tests:
+          - not_null
+          - unique
+
+      - name: exception_type
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['PRICE_BREACH', 'NO_PRICE']

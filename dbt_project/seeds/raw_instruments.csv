@@ -1,0 +1,16 @@
+isin,ticker,name,asset_class,currency,exchange,country,sector,is_active,created_at
+US0378331005,AAPL,Apple Inc.,EQUITY,USD,NASDAQ,US,Technology,true,2024-01-02
+US5949181045,MSFT,Microsoft Corporation,EQUITY,USD,NASDAQ,US,Technology,true,2024-01-02
+US88160R1014,TSLA,Tesla Inc.,EQUITY,USD,NASDAQ,US,Consumer Discretionary,true,2024-01-02
+US4592001014,IBM,International Business Machines,EQUITY,USD,NYSE,US,Technology,true,2024-01-02
+GB0002634946,SHEL,Shell PLC,EQUITY,GBP,LSE,GB,Energy,true,2024-01-02
+FR0000131104,BNP,BNP Paribas SA,EQUITY,EUR,EPA,FR,Financials,true,2024-01-02
+DE0007164600,SAP,SAP SE,EQUITY,EUR,XETRA,DE,Technology,true,2024-01-02
+JP3633400001,7203,Toyota Motor Corporation,EQUITY,JPY,TSE,JP,Consumer Discretionary,true,2024-01-02
+US912828ZT8,,US Treasury 4.25% 2026,FIXED_INCOME,USD,,US,Government,true,2024-01-02
+DE0001102580,,German Bund 0% 2030,FIXED_INCOME,EUR,,DE,Government,true,2024-01-02
+GB00B24FF097,,UK Gilt 4.5% 2034,FIXED_INCOME,GBP,,GB,Government,true,2024-01-02
+XC0009655157,XAU,Gold Spot,COMMODITY,USD,,XC,Precious Metals,true,2024-01-02
+XC0009665538,XAG,Silver Spot,COMMODITY,USD,,XC,Precious Metals,true,2024-01-02
+XC0007231382,XBR,Brent Crude Oil,COMMODITY,USD,,XC,Energy,true,2024-01-02
+US0000000001,DELISTED,Delisted Corp,EQUITY,USD,NYSE,US,Unknown,false,2023-06-01

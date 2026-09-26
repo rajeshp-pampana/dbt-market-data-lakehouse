@@ -1,0 +1,46 @@
+name: 'market_data_lakehouse'
+version: '1.0.0'
+config-version: 2
+
+profile: 'market_data_lakehouse'
+
+model-paths: ["models"]
+seed-paths:  ["seeds"]
+test-paths:  ["tests"]
+macro-paths: ["macros"]
+analysis-paths: ["analyses"]
+
+target-path:  "target"
+clean-targets: ["target", "dbt_packages"]
+
+# ─── Model defaults ────────────────────────────────────────────────────────────
+models:
+  market_data_lakehouse:
+    # Bronze — raw, append-only staging from seeds/external sources
+    bronze:
+      +materialized: view
+      +schema: bronze
+      +tags: ["bronze"]
+
+    # Silver — cleansed, deduplicated, enriched
+    silver:
+      +materialized: table
+      +schema: silver
+      +tags: ["silver"]
+
+    # Gold — business-facing aggregates for reporting
+    gold:
+      +materialized: table
+      +schema: gold
+      +tags: ["gold"]
+
+seeds:
+  market_data_lakehouse:
+    +schema: raw
+
+# ─── Snapshots (SCD Type 2) ────────────────────────────────────────────────────
+snapshots:
+  market_data_lakehouse:
+    +target_schema: snapshots
+    +strategy: timestamp
+    +updated_at: updated_at

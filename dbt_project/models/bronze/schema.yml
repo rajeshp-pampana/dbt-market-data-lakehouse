@@ -1,0 +1,79 @@
+version: 2
+
+models:
+  - name: stg_instruments
+    description: >
+      Staged instrument reference data. One row per ISIN. Casts raw types,
+      trims whitespace, and uppercases enumeration fields.
+    columns:
+      - name: instrument_sk
+        description: SHA-256 surrogate key derived from isin
+        tests:
+          - not_null
+          - unique
+
+      - name: isin
+        description: International Securities Identification Number (primary natural key)
+        tests:
+          - not_null
+          - unique
+
+      - name: asset_class
+        description: Asset class — one of EQUITY, FIXED_INCOME, COMMODITY, FX
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['EQUITY', 'FIXED_INCOME', 'COMMODITY', 'FX']
+
+      - name: native_currency
+        description: Native pricing currency (ISO 4217)
+        tests:
+          - not_null
+
+  - name: stg_prices
+    description: >
+      Staged daily close prices. One row per (isin, business_date, source).
+      Adds a quality_flag for downstream filtering.
+    columns:
+      - name: price_sk
+        description: Surrogate key derived from isin + business_date + source
+        tests:
+          - not_null
+          - unique
+
+      - name: isin
+        tests:
+          - not_null
+
+      - name: business_date
+        tests:
+          - not_null
+
+      - name: source
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['BLOOMBERG', 'REUTERS']
+
+      - name: quality_flag
+        tests:
+          - not_null
+          - accepted_values:
+              values: ['OK', 'MISSING_CLOSE', 'NON_POSITIVE_PRICE']
+
+  - name: stg_fx_rates
+    description: >
+      Staged FX rates. One row per (business_date, from_currency, to_currency, source).
+    columns:
+      - name: fx_rate_sk
+        tests:
+          - not_null
+          - unique
+
+      - name: business_date
+        tests:
+          - not_null
+
+      - name: rate
+        tests:
+          - not_null

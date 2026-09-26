@@ -1,0 +1,5 @@
+# Copy to terraform.tfvars (git-ignored) and fill in values
+project     = "dbtlakehouse"
+environment = "dev"
+location    = "westeurope"
+owner_email = "rajesh.pampana777@gmail.com"
