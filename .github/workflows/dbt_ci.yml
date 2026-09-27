@@ -37,11 +37,14 @@ jobs:
       - name: Install dbt packages
         run: dbt deps
 
+      - name: Set up dbt profile
+        run: cp profiles.yml.example profiles.yml
+
       - name: dbt debug (validate profiles + connection)
         env:
           DBT_PROFILES_DIR: .
           DBT_DUCKDB_PATH: ":memory:"
-        run: dbt debug --profiles-dir .
+        run: dbt debug --profiles-dir . --target ci
 
       - name: dbt seed
         env:
